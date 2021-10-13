@@ -3,47 +3,60 @@ import numpy as np
 
 class simple_generation:
 
-    def __init__(self, std, no_samples, no_dist):
+    def __init__(self, no_samples):
+        
         self.no_samples = no_samples
-        self.std = std
-        self.no_dist = no_dist
-
-        dists = []
-        for i in range(self.no_dist):
-            normalised = np.random.normal(0, self.std, self.no_samples)
-            # self.normalised = normalised
-            dists.append(normalised)
-
-        self.dists = dists
-
-    def linear_fit(self):
+        
+    def gaussian_fit(self, mean, std):
         """
-        Returns array of tuples, each corresponding to a linear function.
+        Returns array corresponding to a gaussian distribution.
         """
-        lines = []
-        for i in self.dists:
-            line = (i, i)
-            lines.append(line)
-        return lines
+        gauss_dist = np.random.normal(mean, std, self.no_simples)
+        
+        return gaussian_dist
+    
+    def linear_fit(self, start_point, step_size, bins):
+        """
+        Returns array corresponding to a linear distribution.
+        """
+        dist = []
+        function = lambda x: x
+        
+        for i in range(bins):
+            n_points = int(function(start_point))
+            x_1 = start_point
+            x_2 = step_size + start_point
+            bin_ = np.random.uniform(x_1, x_2, n_points)
+            start_point += step_size
+            dist.append(bin_)
+
+        dist_conc = np.concatenate(dist, axis=0)
+    
+        return dist_conc
 
     def exp_fit(self):
         """
-        Returns array of tuples, each corresponding to an exponential function.
+        Returns array corresponding to a exponential distribution.
         """
-        exponentials = []
-        for i in self.dists:
-            exponential = (i, np.exp(i))
-            exponentials.append(exponential)
+        exp_dist = np.random.exponential(1,self.no_samples)
+        
+        return exp_dist
 
-        return exponentials
-
-    def quad_fit(self):
+    def quad_fit(self, start_point, step_size, bins):
         """
-        Returns array of tuples, each corresponding to a quadratic function.
+        Returns array corresponding to a exponential distribution.
         """
-        quads = []
-        for i in self.dists:
-            quad = (i, i ** 2)
-            quads.append(quad)
+        dist = []
+        function = lambda x: x**2
+        
+        for i in range(bins):
+            n_points = int(function(start_point))
+            x_1 = start_point
+            x_2 = step_size + start_point
+            bin_ = np.random.uniform(x_1, x_2, n_points)
+            start_point += step_size
+            dist.append(bin_)
 
-        return quads
+        dist_conc = np.concatenate(dist, axis=0)
+    
+        return dist_conc
