@@ -21,20 +21,22 @@ class Glash:
         generator = tf.keras.models.Sequential([
             tf.keras.layers.Dense(50, activation='relu', input_shape=input_shape),
             tf.keras.layers.Dense(100, activation='relu'),
+            tf.keras.layers.Dense(150, activation='relu'),
             tf.keras.layers.Dense(self.no_samples, activation='sigmoid')
-        
+        ])
 
         # Discriminator side
         discriminator = tf.keras.models.Sequential([
             tf.keras.layers.Dense(150, activation='relu', input_shape=[self.no_samples]),
             tf.keras.layers.Dense(100, activation='relu'),
+            tf.keras.layers.Dense(50, activation='relu'),
             tf.keras.layers.Dense(1, activation='sigmoid')
         ])
         glash = tf.keras.models.Sequential([generator, discriminator])
         self.glash = glash
-        self.generator = generator
         self.discriminator = discriminator
-
+        self.generator = generator
+        
     def glash_compile(self):
         """
         Compiles the model using binary crossentropy and Adam as optimizer.
@@ -63,7 +65,7 @@ class Glash:
 
         return proc_dataset
 
-    def train_glash(self, dataset, batch_size, no_epochs=100):
+    def train_glash(self, dataset, batch_size, no_epochs=35):
         """
         Uses batches of data to feed into the network. The generator part simulates a new data distribution which gets to the discriminator network and this one gets trained to classify whether the newly generated data is similar enough to the training data. The training process consists of 2 phases: training the discriminator and training the generator.
         
@@ -90,7 +92,7 @@ class Glash:
                 self.glash.train_on_batch(noise, y2)
 
     def glash_predict(self, sample):
-            """
-            Returns a prediction based on the input new sample.
-            """
+        """
+        Returns a prediction based on the input new sample.
+        """            
         return self.generator(sample)
