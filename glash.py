@@ -46,25 +46,6 @@ class Glash:
         self.discriminator.trainable = False
         self.glash.compile(loss='binary_crossentropy', optimizer='Adam')
 
-    def data_processing(self, dataset, batch_size):
-        """
-        Takes a list or numpy array containing data distributions, splits them into batches of size -> batch_size and returns the new processed data ready for training.
-        
-        **Arguments:
-        - dataset: list or numpy array containing a set of data distributions.
-        - batch_size: Batch size desired.
-        """
-        if type(dataset) == list:
-            dataset = np.array(dataset)
-
-        if type(dataset) == np.ndarray:
-            proc_dataset = np.array(np.split(dataset, int(len(dataset) / batch_size)))
-
-        else:
-            return "Input dataset has the wrong format"
-
-        return proc_dataset
-
     def train_glash(self, dataset, batch_size, no_epochs=35):
         """
         Uses batches of data to feed into the network. The generator part simulates a new data distribution which gets to the discriminator network and this one gets trained to classify whether the newly generated data is similar enough to the training data. The training process consists of 2 phases: training the discriminator and training the generator.
@@ -84,12 +65,31 @@ class Glash:
                 y1 = tf.constant([[0.]] * batch_size + [[1.]] * batch_size)
                 discriminator.trainable = True
                 discriminator.train_on_batch(X_fake_and_real, y1)
-
+                
                 # Phase 2 - Training the generator
                 noise = tf.random.normal(shape=[batch_size, self.no_samples])
                 y2 = tf.constant([[1.]] * batch_size)
                 discriminator.trainable = False
                 self.glash.train_on_batch(noise, y2)
+                
+    def data_processing(self, dataset, batch_size):
+        """
+        Takes a list or numpy array containing data distributions, splits them into batches of size -> batch_size and returns the new processed data ready for training.
+        
+        **Arguments:
+        - dataset: list or numpy array containing a set of data distributions.
+        - batch_size: Batch size desired.
+        """
+        if type(dataset) == list:
+            dataset = np.array(dataset)
+
+        if type(dataset) == np.ndarray:
+            proc_dataset = np.array(np.split(dataset, int(len(dataset) / batch_size)))
+
+        else:
+            return "Input dataset has the wrong format"
+
+        return proc_dataset
 
     def glash_predict(self, sample):
         """
