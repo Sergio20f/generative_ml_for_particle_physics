@@ -7,7 +7,8 @@ import pandas as pd
 
 class Sampling(keras.layers.Layer):
     """
-    samples codings from a normal distribution.samples a random vector from a normal     distribution with mean 0 and standard deviation of 1 
+    samples codings from a normal distribution.samples a random vector from a normal 
+    distribution with mean 0 and standard deviation of 1 
     """
     def call(self, inputs):
         mean, log_var = inputs
@@ -22,7 +23,8 @@ class Kuyf:
         
         Inputs:
         - features_num: how many datapoints there are in the dataset
-        - codings_size: the lenght of the codings vector, the codings here are not             generated directly from the input  
+        - codings_size: the lenght of the codings vector, the codings here are not             
+          generated directly from the input  
         
         """
 
