@@ -6,6 +6,9 @@ import pandas as pd
 
 
 class Sampling(keras.layers.Layer):
+    """
+    samples codings from a normal distribution.samples a random vector from a normal     distribution with mean 0 and standard deviation of 1 
+    """
     def call(self, inputs):
         mean, log_var = inputs
         return tf.random.normal(tf.shape(log_var)) * tf.exp(log_var / 2) + mean
@@ -14,6 +17,14 @@ class Sampling(keras.layers.Layer):
 class Kuyf:
 
     def __init__(self, features_num, coding_size=2):
+        """
+        Creates a Variational Autoencoder that works with 1D data
+        
+        Inputs:
+        - features_num: how many datapoints there are in the dataset
+        - codings_size: the lenght of the codings vector, the codings here are not             generated directly from the input  
+        
+        """
 
         # Encoder part
 
