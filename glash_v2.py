@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-def glash_discriminator(n=2):
+def glash_discriminator(n=2, act_fun_1=tf.keras.activations.relu):
     """
     Discriminator network side of the GAN. It consists of a sequence of fully connected dense layers that output a
     probability of the input being real (1) or fake (0). It aims to distinguish between real and fake distributions
@@ -12,7 +12,7 @@ def glash_discriminator(n=2):
     """
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(n,)),
-        tf.keras.layers.Dense(25, activation='relu',
+        tf.keras.layers.Dense(25, activation=act_fun_1,
                               kernel_initializer='he_uniform'),
         tf.keras.layers.Dense(1, activation='sigmoid')
     ], name='glash_discriminator')
@@ -20,7 +20,7 @@ def glash_discriminator(n=2):
     return model
     
 
-def glash_generator(latent_dim=5):
+def glash_generator(latent_dim=5, act_fun_1=tf.keras.activations.relu, act_fun_2=tf.keras.activations.relu):
     """
     Generative network component of the GAN. It consists of a sequence of fully connected dense layers that output a
     newly generated distribution. It aims to generate a distribution that is close to the input distribution improving
@@ -31,9 +31,9 @@ def glash_generator(latent_dim=5):
     """
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(latent_dim,)),
-        tf.keras.layers.Dense(25, activation='relu',
+        tf.keras.layers.Dense(25, activation=act_fun_1,
                               kernel_initializer='he_uniform'),
-        tf.keras.layers.Dense(2, activation='tanh') # Test different activation functions for different shapes
+        tf.keras.layers.Dense(2, activation=act_fun_2) # Test different activation functions for different shapes
     ], name='glash_generator')
 
     return model
@@ -89,3 +89,6 @@ class Glash(tf.keras.Model):
         self.optimizerG.apply_gradients(zip(grads, self.generator.trainable_weights))
 
         return {'d_loss': d_loss, 'g_loss': g_loss}
+    
+    def call(self, noise):
+        return self.generator(noise)
