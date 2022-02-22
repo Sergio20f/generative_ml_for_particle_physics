@@ -80,6 +80,10 @@ def stats_dist(dist, dist2=None, prnt=True):
         - dist2 (numpy array): The second distribution to be analyzed.
         - prnt (bool): Whether or not to print the results. If print is False, the function will simply return the
         results.
+    
+    Output:
+        - Mean, standard deviation, variance, covariance of the first distribution. If a dist2 is included then, the covariance
+        takes into account dist2 as well.
     """
     if prnt:
         print("-------------------------------")
@@ -94,7 +98,10 @@ def stats_dist(dist, dist2=None, prnt=True):
             return np.mean(dist), np.std(dist), np.var(dist), np.cov(dist, dist2)
         else:
             print("Covariance:", np.cov(dist))  # Will be a scalar
-
+    else:
+        if dist2 is not None:
+            return np.mean(dist), np.std(dist), np.var(dist), np.cov(dist, dist2)
+        
     return np.mean(dist), np.std(dist), np.var(dist), np.cov(dist)
 
 
@@ -123,3 +130,72 @@ def df_generator(stats_or_x, stats_gen_x, stats_or_y, stats_gen_y, rows: np.ndar
     stats_df = stats_df.style.applymap(df_style, subset=[" "])
 
     return stats_df
+
+
+def chi_squared(h1, h2):
+    """
+    Computes the chi squared between two histograms. For the computation, it is designed to just take into consideration the
+    heights of each of the bins.
+    
+    Parameters:
+        - h1: array with the heights of each of the bins of histogram 1.
+        - h2: array with the heights of each of the bins of histogram 2.
+       
+    Output:
+        - Chi squared coefficient
+    """
+    coeff = np.sum(((h2-h1)**2)/h1)
+    
+    return coeff
+
+
+def align_hist(plot_ht, plot_ht_2, nbins):
+    """
+    Function that returns a list with new values for the bins' bounds. This is done by redefining the range of both histograms,
+    generalise it, and divide that range over the number of desired bins. This list can be used further in the function
+    "norm_hist".
+    
+    Parameters:
+        - plot_ht: the output of the function plt.hist(HIST_1)
+        - plot_ht_2: the output of the function plt.hist(HIST_2)
+        - nbins: number of bins desired
+    """
+    h1 = plot_ht[0]; x_val = plot_ht[1]
+    h2 = plot_ht_2[0]; x_val_2 = plot_ht_2[1]
+    
+    min_point = min([min(x_val), min(x_val_2)])
+    max_point = max([max(x_val), max(x_val_2)])
+    rge = max_point - min_point
+    
+    bin_sep = rge/nbins
+    bins_val = [min_point]
+    for i in range(nbins):
+        point = bins_val[i] + bin_sep
+        bins_val.append(point)
+    
+    return bins_val
+
+
+def norm_hist(h1, bins_val):
+    """
+    Function that gets rid of the bins with 0 height by joining them together with the closest non-zero bin. This avoids getting
+    an undefined result when "chi_squared" is used.
+    
+    Parameters:
+        - h1: height of the histogram 1 (Expected values/real histogram)
+        - bins_val: aligned list of values corresponding to the bounds of the bins. (Generally, output of align_hist)
+        
+    Output:
+        - List with the new bins with non-zero height.
+    """
+    zero_idx = np.where(h1 == 0)[0]
+    for i in zero_idx:
+        non_zero_idx = i
+        while non_zero_idx in zero_idx:
+            non_zero_idx += 1
+        
+        bins_val[i] = bins_val[non_zero_idx]
+    
+    bins_val = list(dict.fromkeys(bins_val))
+    
+    return bins_val
